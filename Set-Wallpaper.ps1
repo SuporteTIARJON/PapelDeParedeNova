@@ -4,7 +4,7 @@
 
 # 1. Configurações de Origem e Destino
 # IMPORTANTE: Altere a URL abaixo para o link RAW do seu arquivo no GitHub
-$urlImagem     = "https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPOSITORIO/main/wallpaper.jpeg"
+$urlImagem = "https://raw.githubusercontent.com/SuporteTIARJON/PapelDeParedeNova/main/wallpaper.jpeg"
 $pastaDestino  = "C:\ProgramData\EmpresaTI"
 $caminhoImagem = "$pastaDestino\wallpaper.jpeg"
 
