@@ -1,23 +1,21 @@
-# ==============================================================================
-# Script de Alteração de Papel de Parede via GitHub / N-able
-# ==============================================================================
-
-# 1. Configurações de Origem e Destino
-# IMPORTANTE: Altere a URL abaixo para o link RAW do seu arquivo no GitHub
-$urlImagem = "https://raw.githubusercontent.com/SuporteTIARJON/PapelDeParedeNova/main/wallpaper.jpeg"
+$urlImagem     = "https://raw.githubusercontent.com/SuporteTIARJON/PapelDeParedeNova/main/wallpaper.jpeg"
 $pastaDestino  = "C:\ProgramData\EmpresaTI"
 $caminhoImagem = "$pastaDestino\wallpaper.jpeg"
 
-# 2. Garante que o diretório de destino exista na máquina local
+# 1. Garante a pasta local
 if (-not (Test-Path $pastaDestino)) {
     New-Item -Path $pastaDestino -ItemType Directory -Force | Out-Null
 }
 
-# 3. Força a utilização do protocolo TLS 1.2 para download do GitHub e realiza o download
+# 2. Baixa a imagem do GitHub
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Invoke-WebRequest -Uri $urlImagem -OutFile $caminhoImagem -UseBasicParsing
 
-# 4. Compila a chamada da API do Windows para atualizar a área de trabalho
+# 3. Configura o modo de exibicao para Preencher (Fill) no Registro
+Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name WallpaperStyle -Value '2'
+Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name TileWallpaper -Value '0'
+
+# 4. Chama a API do Windows para aplicar e atualizar a tela
 $code = @"
 using System;
 using System.Runtime.InteropServices;
@@ -28,8 +26,5 @@ public class Wallpaper {
 }
 "@
 
-Add-Type -TypeDefinition $code
-
-# 5. Aplica a nova imagem e força a atualização imediata da interface do Windows
-# SPI_SETDESKWALLPAPER = 0x0014 | SPIF_UPDATEINIFILE = 0x01 | SPIF_SENDCHANGE = 0x02
+Add-Type -TypeDefinition $code -ErrorAction SilentlyContinue
 [Wallpaper]::SystemParametersInfo(0x0014, 0, $caminhoImagem, 0x01 -bor 0x02)
